@@ -4,7 +4,7 @@ const { Admin } = require("../db");
 const { signupSchema, signinSchema } = require('../Zod/userzod');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const JWT_ADMIN_PASSWORD = "234567"; //doubt this password saved previously in .env file or take form user
+const JWT_ADMIN_PASSWORD = ""; //doubt this password saved previously in .env file or take form user
 
 adminRouter.post('/signup',async(req, res) => {
     const { email, password, username } = req.body;
