@@ -1,10 +1,11 @@
 const { Router } = require('express');
 const adminRouter = Router();
-const { Admin } = require("../db");
+const { Admin, Course } = require("../db");
 const { signupSchema, signinSchema } = require('../Zod/userzod');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const JWT_ADMIN_PASSWORD = ""; //doubt this password saved previously in .env file or take form user
+const { JWT_ADMIN_PASSWORD } = require('../config');
+const { adminMiddleware } = require('../middleware/adminmiddle');
 
 adminRouter.post('/signup',async(req, res) => {
     const { email, password, username } = req.body;
@@ -61,21 +62,56 @@ adminRouter.post('/signin', async(req, res) => {
     }
 });
 
-adminRouter.post('/course', (req, res) => {
+adminRouter.post('/course',adminMiddleware, async(req, res) => {
+    const adminId = req.adminId;
+    const { title, description, price, Imageurl } = req.body;
+
+    const courseId = await Course.create({
+        title,
+        description,
+        price,
+        Imageurl,
+        creatorId: adminId
+    });
+
     res.json({
-        message: 'User signup endpoint'
+        message: 'course created successfully',
+        courseId: courseId._id
     })
 });
 
-adminRouter.put('/course', (req, res) => {
+adminRouter.put('/course', adminMiddleware, async(req, res) => {
+    const adminId = req.adminId;
+    const { courseId, title, description, price, Imageurl } = req.body;
+
+    const updatecourse = await Course.updateOne({
+        _id: courseId, 
+        creatorId: adminId
+    }, {
+        title,
+        description,
+        price,
+        Imageurl,    
+    });
+
     res.json({
-        message: 'User signup endpoint'
+        message: 'course updated successfully',
+        courseId: updatecourse._id
     })
 });
 
-adminRouter.get('/course/bulk', (req, res) => {
+adminRouter.get('/course/bulk',adminMiddleware, async(req, res) => {
+    const adminId = req.adminId;
+    const course = await Course.find({
+        creatorId: adminId
+    });
+    if (!course) {
+        return res.status(404).json({ error: "No courses found" });
+    }
+
     res.json({
-        message: 'User signup endpoint'
+        message: 'User signup endpoint',
+        course
     })
 });
 

@@ -4,8 +4,9 @@ const userRouter = Router();
 const bcrypt = require('bcrypt');
 const {signupSchema, signinSchema} = require('../Zod/userzod');
 const jwt = require('jsonwebtoken');
-const JWT_USER_PASSWORD = ""; //doubt this password saved previously in .env file or take form user
- 
+const { JWT_USER_PASSWORD } = require('../config');
+const { userMiddleware } = require('../middleware/usermiddle');
+
 userRouter.post('/signup', async(req, res) => {
     //TODO- adding zod validation for signup
     //TODO- adding bcrypt for password hashing
@@ -68,7 +69,7 @@ userRouter.post('/signin',async(req, res) => {
     }
 });
 
-userRouter.get('/purchases', (req, res) => {
+userRouter.get('/purchases', userMiddleware, (req, res) => {
     res.json({
         message: 'User signup endpoint'
     })

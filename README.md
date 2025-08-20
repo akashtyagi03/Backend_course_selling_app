@@ -19,7 +19,6 @@
 
 
 
-jdiojiehi
 how application grow-
 - intailize express , added router- user, course, admin.
 - added database schema. os user, course, admin, purchases.
