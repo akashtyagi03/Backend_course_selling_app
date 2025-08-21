@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { User } = require('../db'); 
+const { User, Purchase, Course } = require('../db'); 
 const userRouter = Router();
 const bcrypt = require('bcrypt');
 const {signupSchema, signinSchema} = require('../Zod/userzod');
@@ -69,9 +69,16 @@ userRouter.post('/signin',async(req, res) => {
     }
 });
 
-userRouter.get('/purchases', userMiddleware, (req, res) => {
+userRouter.get('/purchases', userMiddleware, async(req, res) => {
+    const userId  = req.userId;
+    const purchases = await Purchase.find({ userId });
+    const courseIds = purchases.map(purchase => purchase.courseID);
+
+    const courses = await Course.find({ _id: { $in: courseIds } });
+    
     res.json({
-        message: 'User signup endpoint'
+        purchases,
+        courses
     })
 });
 
